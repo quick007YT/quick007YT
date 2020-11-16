@@ -6,9 +6,15 @@ If you wanna find my other socials, I have a preatty uniqe name, `quick007`. Loo
 
 ---
 
-#### Need help?
+### Need help?
 
 Feel free to reach out to me on [discord](https://dsc.bio/LukasK), I'm most active there!
+
+---
+
+### Some cool stats
+
+![github stats](https://github-readme-stats.vercel.app/api?username=LukasmanMHdude&show_icons=true&hide_title=true&theme=nord)
 
 <!--
 **LukasmanMHdude/LukasmanMHdude** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
