@@ -2,7 +2,7 @@
 
 I'm Lukas, and I do a lot of random stuff with minehut (making servers) and minecraft animations. You'll probably see me on [youtube](https://www.youtube.com/channel/UCz4sh4dNpNHtqD80TvOZL-A), [twitter](https://twitter.com/quick007yt), and [discord](https://dsc.bio/LukasK).
 
-If you wanna find my other socials, I have a preatty uniqe name, `quick007`. Look taht up on good and you'll find me :wink:.
+If you wanna find my other socials, I have a preatty uniqe name, `quick007`. Look that up on google and you'll find me :wink:.
 
 ---
 
