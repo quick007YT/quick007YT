@@ -21,3 +21,29 @@ As I said above, there not meant to add more lore, unlike most high level quests
 Bassiclly another section in `/gu manage`, this would allow you to see progress on goals. Gaosl rotate every week, and guilds get 7 to choose from. You can only choose 3 "goals" to track at a time. Example goals could be `Gain 5 levels as a guild`, `Complete 3 raids with 2 or more guild mates`, or `Earn 10,000 emeralds from your terretories`. (these are just basic ideas, don't judje suggestion based of these examples). 
 
 Goals would also be based of guild level to make it fair, as well as all needing to require multiple people working together to get a reward.
+
+#### Community Quests 
+
+**This last section is the one I'm the most on edge about. I relize this one will need tweaks - maybe even a full revamp but here goes:**
+
+As stated above, there will be sync and async parts. Heres what they mean
+
+| Name | Definition | Usage |
+| - | - | - |
+| async | only one person is needed to trigger this segment (although you can have more) | Used for things like triggering and ending the quest |
+| sync | x amount of people needed, could even be done by haveing a level range. | Most of the quest lol |
+
+Example quest: 
+
+dw guild quest won't be fetch quests, just eiest type for me to come up with 
+
+| sync/async | stage | info |
+| - | - | - |
+| async | 1 | talk to therek at the stairs |
+| sync | 2 | get a bowl from yahya with leathal force |
+| async | 3 | give blood stained bowl back to therek |
+| sync | 4 | uh oh why is he trying to murder you now |
+
+Ok, ok, thats meant to be a joke, but a full impelmentation would be mch more fleshed out, using those 2 diff types of triggering in a smart way.
+
+*yes this is just an excuse to use github tables md so I can provide reasoning for not just posting this on discord lmao*
