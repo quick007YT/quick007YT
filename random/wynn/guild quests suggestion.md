@@ -18,4 +18,6 @@ As I said above, there not meant to add more lore, unlike most high level quests
 
 #### Community Goals
 
-Bassiclly another section in `/gu manage`, this would allow you to see progress on goals. Gaosl rotate every week, and guilds get 7 to choose from. You can only choose 3 "goals" to track at a time.
+Bassiclly another section in `/gu manage`, this would allow you to see progress on goals. Gaosl rotate every week, and guilds get 7 to choose from. You can only choose 3 "goals" to track at a time. Example goals could be `Gain 5 levels as a guild`, `Complete 3 raids with 2 or more guild mates`, or `Earn 10,000 emeralds from your terretories`. (these are just basic ideas, don't judje suggestion based of these examples). 
+
+Goals would also be based of guild level to make it fair, as well as all needing to require multiple people working together to get a reward.
