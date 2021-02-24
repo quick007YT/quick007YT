@@ -8,9 +8,10 @@ options:
 # ------
 # to-do
 # ------
-# add tab complete
-# finish cmds
+# switch from using player to using the player's uuid, and make sure it converts in the appropriate places
+# finish /troops [done] 
 # add /troops help, invitecancel, members
+# add tab complete
 # 
 
 on script load:
@@ -153,13 +154,13 @@ command /troops [<text>] [<text>] [<text>]:
 							add {troop::%player's uuid%} to {troops::request::%{_u}%::*}
 							message "{@p} Invited &6%arg-2%&f to the troop."
 							send "{@p} You have been invited to join &l%{troop::%player's uuid%}%&r&6. Use &b/tr join %{troop::%player's uuid%}% &6to join" to {_p}
-
+							troopchat({troop::%player's uuid%}, "&6%{_p}% &bwas invited to join the troop.")
 						else:
-							send "{@p} This player is already in your troop."
+							message "{@p} This player is already in your troop."
 					else:
-						send "{@p} &cPlease add a player"
+						message "{@p} &cPlease add a player"
 				else:
-					send "{@p} &cOnly admins can invite players to a troop."
+					message "{@p} &cOnly admins can invite players to a troop."
 			else:
 				send "{@p} &cYou are not in a troop."
 		else if arg-1 is "join":
@@ -168,15 +169,14 @@ command /troops [<text>] [<text>] [<text>]:
 					set {troop::%player's uuid%} to arg 2
 					add 1 to {troop::members::%{troop::%player's uuid%}%}
 					add "%player%" to {troop::memberlist::%arg 2%::*}
-					send "{@p} You have joined &6%arg 2%&f."
-					loop {troop::memberlist::%{troop::%player's uuid%}%::*}:
-						send "{@p} &6%player%&f has joined the troop." to loop-value parsed as player
+					message "{@p} You have joined &6%arg 2%&f."
+					troopchat({troop::%player's uuid%}, "&6%player% &bhas joined the troop.")
 					wait 3 ticks
-					delete {troops::request::%player's uuid%}
+					delete {troops::request::%player's uuid%::*}
 				else:
-					send "{@p} You have no pending requests."
+					message "{@p} &cYou have no pending requests."
 			else:
-				send "{@p} You are already in a troop."
+				message "{@p} &cYou are already in a troop."
 
 
 		else if arg-1 is "promote":
@@ -187,31 +187,31 @@ command /troops [<text>] [<text>] [<text>]:
 					if {troop::admins::%{troop::%player's uuid%}%::*} does not contain {_p}:
 						if arg-2 is set:
 							add "%{_p}%" to {troop::admins::%{troop::%player's uuid%}%::*}
-							loop {troop::memberlist::%{troop::%player's uuid%}%::*}:
-								send "{@p} &6%{_p}%&f has been made an admin in the troop." to loop-value parsed as player
+							troopchat({troop::%player's uuid%}, "&6%{_p}% &bhas been made an admin!")
 						else:
-							send "{@p} Enter a player."
+							message "{@p} &cEnter a player."
 					else:
-						send "{@p} This player is already an admin."
+						message "{@p} &cThis player is already an admin."
+				else:
+					message "{@p} &cYou need to be an admin or higher to do this."
 		else if arg-1 is "demote":
+			set {_p} to (arg-2 parsed as player)
+			set {_u} to {_p}'s uuid
 			if {troop::%player's uuid%} is set:
 				if arg-2 is set:
-					if {troop::admins::%{troop::%player's uuid%}%::*} contains player: 
-						set {_p} to (arg-2 parsed as player)
-						set {_u} to {_p}'s uuid
-						if {troop::owner::%{troop::%player's uuid%}%} is not {_p}:
-							if {troop::admins::%{troop::%player's uuid%}%::*} contains {_p}:
+					if {troop::owner::%{troop::%player's uuid%}%} is player:
+						if {troop::admins::%{troop::%player's uuid%}%::*} contains {_p}: 						
+							if {troop::owner::%{troop::%player's uuid%}%} is not {_p}:
 								remove "%{_p}%" from {troop::admins::%{troop::%player's uuid%}%::*}
-								loop {troop::memberlist::%{troop::%player's uuid%}%::*}:
-									message "{@p} &6%{_p}%&f has been demoted in the troop." to loop-value parsed as player
+								troopchat({troop::%player's uuid%}, "&6%{_p}% &bhas been demoted to member rank.")
 							else:
-								message "{@p} &cThis player is not an admin."
+								message "{@p} &cYou can't demote urself lmfao." # easter egg lol
 						else:
-							message "{@p} &cYou can not demote the owner."
+							message "{@p} &cYou can't demote a normal member. &7Use /troops kick to kick players"
 					else:
-						message "{@p} &cYou can't demote a normal member. &7Use /tr kick to kick players"
+						message "{@p} &cOnly the owner can demote admins."
 				else:
-					message "{@p} Enter a player."
+					message "{@p} &cEnter a player."
 			else:
 				send "{@p} You're not in a troop."
 		else if arg-1 is "kick":
@@ -231,7 +231,7 @@ command /troops [<text>] [<text>] [<text>]:
 								else:
 									message "{@p} &cOnly the owner can kick admins."
 							else:
-								message "{@p} &cYou can't kick the owner &lsmh my smh my head."
+								message "{@p} &cYou can't kick the owner &lsmh my smh my head." # easter egg lol
 						else if {troop::memberlist::%{troop::%player's uuid%}%::*} contains {_p}:
 							troopchat("%{troop::%player's uuid%}%", "&6%{_p}% &chas been kicked from the troop.")
 							remove "%{_p}%" from {troop::memberlist::%{troop::%player's uuid%}%::*}
