@@ -10,31 +10,31 @@ options:
 # ------
 # switch from using player to using the player's uuid, and make sure it converts in the appropriate places
 # finish /troops [done] 
-# add /troops help, invitecancel, members
+# add /troops help, invitecancel, members, list
 # add tab complete
-# 
+# add a toggle for troopchat using /t toggle
 
 on script load:
 	if {troop::names::*} is not set:
 		add "" to {troop::names::*}
 
 
-every 5 minutes:
+every 5 minutes: #RE-DO!!!!!!!!!
 	loop all players:
-		if {troop::%loop-player's uuid%} is set:
-			add 1 to {troop::coins::%{troop::%loop-player's uuid%}%}
+		if {troop::troop::%loop-player's uuid%} is set:
+			add 1 to {troop::coins::%{troop::troop::%loop-player's uuid%}%}
 			send "{@p} +1 troop coins." to loop-player #redo
 
-on npc rightclick:
+on npc click:
 	if name of npc is "&6Troops Master":
-		if {troop::%player's uuid%} is set:
+		if {troop::troop::%player's uuid%} is set:
 			message "&4Your already in a troop! &6&lTIP: &7Use /troops to manage your troop, or /troops leave to leave one."
 		else:
 			set {troops::troopmastertalk::%player's uuid%} to 1
 			message ""
 			message "      &6&lTROOP CREATION"
 			message ""
-			message "&7Cost: 576 &8- &7 Level Req.: 50"
+			message "&7Cost: 576e (9 stks.) &8- &7 Level Req.: 50"
 			message ""
 			message "&7Type &ayes &7or &cno &7in chat"
 			message ""
@@ -42,7 +42,7 @@ on npc rightclick:
 on chat:
 	if {troops::troopmastertalk::%player's uuid%} is set:
 		cancel event
-		set "%message%" to {_msg}
+		set {_msg} to the chat message
 		if {troops::troopmastertalk::%player's uuid%} is 1:
 			if {_msg} is "yes":
 				troopcreation(player, 1)
@@ -63,33 +63,30 @@ on chat:
 				else if {troop::blockednames::*} contains {_msg}:
 					message "{@p} &cThis name has been blocked by an admin. &7Contact a staff member if you belive this was a mistake."
 				else:
-					set {troop::%player's uuid%} to {_msg}
+					set {troop::troop::%player's uuid%} to {_msg}
 					add {_msg} to {troop::names::*}
-					set {troop::owner::%{_msg}%} to player
-					add "%player%" to {troop::admins::%{_msg}%::*}
+					set {troop::owner::%{_msg}%} to player's uuid
+					add player's uuid to {troop::admins::%{_msg}%::*}
 					set {troop::coins::%{_msg}%} to 0
 					set {troop::level::%{_msg}%} to 1
 					set {troop::levelprogress::%{_msg}%} to 0
-					add "%player%" to {troop::memberlist::%{_msg}%::*}
+					add player's uuid to {troop::memberlist::%{_msg}%::*}
 					add 1 to {troop::members::%{_msg}%}
-					send "{@p} Troop &l%{troop::%player's uuid%}%&r&6 created. Use &l/troops help &r&6for more info on guilds."
+					send "{@p} Troop &l%{troop::troop::%player's uuid%}%&r&6 created. Use &l/troops help &r&6for more info on guilds."
 					delete {troops::troopmastertalk::%player's uuid%}
 					delete {troops::mastertimeout::%player's uuid%}
 					delete {troops::masterplayer::%player's uuid%}
 
-
-			
-
-
-on leave:
+on disconnect:
 	troopcancel(player)
 
 every 1 minute:
-	if {troops::mastertimeout::%player's uuid%} is {troops::troopmastertalk::%player's uuid%}:
-		troopcancel(player)
-	else if {troops::troopmastertalk::%player's uuid%} is set:
-		set {troops::mastertimeout::%player's uuid%} to {troops::troopmastertalk::%player's uuid%}
-		set {troops::masterplayer::%player's uuid%} to player
+	loop all players:
+		if {troops::mastertimeout::%loop-player's uuid%} is {troops::troopmastertalk::%loop-player's uuid%}:
+			troopcancel(loop-player)
+		else if {troops::troopmastertalk::%loop-player's uuid%} is set:
+			set {troops::mastertimeout::%loop-player's uuid%} to {troops::troopmastertalk::%loop-player's uuid%}
+			set {troops::masterplayer::%loop-player's uuid%} to player
 
 
 
@@ -98,46 +95,48 @@ command /troops [<text>] [<text>] [<text>]:
 	trigger:
 		if arg-1 is "info":
 			if arg-2 is not set:
-				if {troop::%player's uuid%} is set:
-					message "{@p} &l{troop::%player's uuid%} &r&8- &bInfo"
+				if {troop::troop::%player's uuid%} is set:
+					message "{@p} &l{troop::troop::%player's uuid%} &r&8- &bInfo"
 					message ""
-					message "&6Level: &b%{troop::level::%{troop::%player's uuid%}%}% &7%{troop::levelprogress::%{troop::%player's uuid%}%}%%%"
-					message "&6Coins: &a⛁%{troop::coins::%{troop::%player's uuid%}%}%"
+					message "&6Level: &b%{troop::level::%{troop::troop::%player's uuid%}%}% &7%{troop::levelprogress::%{troop::troop::%player's uuid%}%}%%%"
+					message "&6Coins: &a⛁%{troop::coins::%{troop::troop::%player's uuid%}%}%"
 					message ""
-					message "&6Owner: &e%{troop::owner::%{troop::%player's uuid%}%}"
-					send formatted "&6Members: &7[%{troop::members::%{troop::%player's uuid%}%}%] &b<cmd:/troops members %{troop::%player's uuid%}%>[Click here]<reset>" to player
+					set {_owner} to {troop::owner::%{troop::troop::%player's uuid%}%} parsed as offline player
+					message "&6Owner: &e%{_owner}%"
+					send formatted "&6Members: &7[%{troop::members::%{troop::troop::%player's uuid%}%}%] &b<cmd:/troops members %{troop::troop::%player's uuid%}%>[Click here]<reset>" to player
 				else:
 					send "{@p} &cPlease specify a troop"
 			else:
 				if {troop::names::*} contains arg 2:
-					message "{@p} &l%arg 2%% &r&8- &bInfo"
+					message "{@p} &l%arg 2% &r&8- &bInfo"
 					message ""
 					message "&6Level: &b%{troop::level::%arg 2%}% &7%{troop::levelprogress::%arg 2%}%%%"
 					message "&6Coins: &a⛁%{troop::coins::%arg 2%}%"
 					message ""
-					message "&6Owner: &e%{troop::owner::%arg 2%}"
-					send formatted "&6Members: &7[%{troop::members::%{troop::%player's uuid%}%}%] &b<cmd:/troops members %arg 2%>[Click here]<reset>" to player
+					set {_owner} to {troop::owner::%arg 2%} parsed as offline player
+					message "&6Owner: &e%{_owner}%"
+					send formatted "&6Members: &7[%{troop::members::%{troop::troop::%player's uuid%}%}%] &b<cmd:/troops members %arg 2%>[Click here]<reset>" to player
 				else:
 					message "{@p} &cThis troop dosen't exist!"
 
 
 		else if arg-1 is "delete":
-			if {troop::%player's uuid%} is set:
-				if {troop::owner::%{troop::%player's uuid%}%} = player:
-					send "{@p} troop &6%{troop::%player's uuid%}%&f deleted."
-					remove {troop::%player's uuid%} from {troop::names::*}
-					delete {troop::owner::%{troop::%player's uuid%}%}
-					delete {troop::coins::%{troop::%player's uuid%}%}
-					delete {troop::admins::%{troop::%player's uuid%}%::*}
-					delete {troop::members::%{troop::%player's uuid%}%}
-					delete {troop::level::%{troop::%player's uuid%}%}
-					delete {troop::levelprogress::%{troop::%player's uuid%}%}
-					loop {troop::memberlist::%{troop::%player's uuid%}%::*}:
+			if {troop::troop::%player's uuid%} is set:
+				if {troop::owner::%{troop::troop::%player's uuid%}%} = player's uuid:
+					send "{@p} troop &6%{troop::troop::%player's uuid%}%&f deleted."
+					remove {troop::troop::%player's uuid%} from {troop::names::*}
+					delete {troop::owner::%{troop::troop::%player's uuid%}%}
+					delete {troop::coins::%{troop::troop::%player's uuid%}%}
+					delete {troop::admins::%{troop::troop::%player's uuid%}%::*}
+					delete {troop::members::%{troop::troop::%player's uuid%}%}
+					delete {troop::level::%{troop::troop::%player's uuid%}%}
+					delete {troop::levelprogress::%{troop::troop::%player's uuid%}%}
+					loop {troop::memberlist::%{troop::troop::%player's uuid%}%::*}:
 						set {_p} to loop-value parsed as player
 						set {_u} to {_p}'s uuid
-						delete {troop::memberlist::%{troop::%player's uuid%}%::*}
+						delete {troop::memberlist::%{troop::troop::%player's uuid%}%::*}
 						wait 3 ticks
-						delete {troop::%{_u}%}
+						delete {troop::troop::%{_u}%}
 				else:
 					send "{@p} &cOnly the troop owner can delete the troop."
 			else:
@@ -145,16 +144,16 @@ command /troops [<text>] [<text>] [<text>]:
 
 
 		else if arg-1 is "invite":
-			if {troop::%player's uuid%} is set:
-				if {troop::admins::%{troop::%player's uuid%}%::*} contains player:
+			if {troop::troop::%player's uuid%} is set:
+				if {troop::admins::%{troop::troop::%player's uuid%}%::*} contains player's uuid:
 					set {_p} to (arg-2 parsed as player)
 					set {_u} to {_p}'s uuid
 					if arg-2 is set:
-						if {troop::memberlist::%{troop::%player's uuid%}%::*} doesn't contain {_p}:
-							add {troop::%player's uuid%} to {troops::request::%{_u}%::*}
+						if {troop::memberlist::%{troop::troop::%player's uuid%}%::*} doesn't contain {_u}:
+							add {troop::troop::%player's uuid%} to {troops::request::%{_u}%::*}
 							message "{@p} Invited &6%arg-2%&f to the troop."
-							send "{@p} You have been invited to join &l%{troop::%player's uuid%}%&r&6. Use &b/tr join %{troop::%player's uuid%}% &6to join" to {_p}
-							troopchat({troop::%player's uuid%}, "&6%{_p}% &bwas invited to join the troop.")
+							send "{@p} You have been invited to join &l%{troop::troop::%player's uuid%}%&r&6. Use &b/tr join %{troop::troop::%player's uuid%}% &6to join" to {_p}
+							troopchat({troop::troop::%player's uuid%}, "&6%{_p}% &bwas invited to join the troop.")
 						else:
 							message "{@p} This player is already in your troop."
 					else:
@@ -164,13 +163,13 @@ command /troops [<text>] [<text>] [<text>]:
 			else:
 				send "{@p} &cYou are not in a troop."
 		else if arg-1 is "join":
-			if {troop::%player's uuid%} is not set:
+			if {troop::troop::%player's uuid%} is not set:
 				if {troops::request::%player's uuid%::*} contains arg 2:
-					set {troop::%player's uuid%} to arg 2
-					add 1 to {troop::members::%{troop::%player's uuid%}%}
-					add "%player%" to {troop::memberlist::%arg 2%::*}
+					set {troop::troop::%player's uuid%} to arg 2
+					add 1 to {troop::members::%{troop::troop::%player's uuid%}%}
+					add player's uuid to {troop::memberlist::%arg 2%::*}
 					message "{@p} You have joined &6%arg 2%&f."
-					troopchat({troop::%player's uuid%}, "&6%player% &bhas joined the troop.")
+					troopchat({troop::troop::%player's uuid%}, "&6%player% &bhas joined the troop.")
 					wait 3 ticks
 					delete {troops::request::%player's uuid%::*}
 				else:
@@ -180,14 +179,14 @@ command /troops [<text>] [<text>] [<text>]:
 
 
 		else if arg-1 is "promote":
-			if {troop::%player's uuid%} is set:
-				if {troop::admins::%{troop::%player's uuid%}%::*} contains player: 
+			if {troop::troop::%player's uuid%} is set:
+				if {troop::admins::%{troop::troop::%player's uuid%}%::*} contains player's uuid: 
 					set {_p} to (arg-2 parsed as player)
 					set {_u} to {_p}'s uuid
-					if {troop::admins::%{troop::%player's uuid%}%::*} does not contain {_p}:
+					if {troop::admins::%{troop::troop::%player's uuid%}%::*} does not contain {_u}:
 						if arg-2 is set:
-							add "%{_p}%" to {troop::admins::%{troop::%player's uuid%}%::*}
-							troopchat({troop::%player's uuid%}, "&6%{_p}% &bhas been made an admin!")
+							add {_u} to {troop::admins::%{troop::troop::%player's uuid%}%::*}
+							troopchat({troop::troop::%player's uuid%}, "&6%{_p}% &bhas been made an admin!")
 						else:
 							message "{@p} &cEnter a player."
 					else:
@@ -197,13 +196,13 @@ command /troops [<text>] [<text>] [<text>]:
 		else if arg-1 is "demote":
 			set {_p} to (arg-2 parsed as player)
 			set {_u} to {_p}'s uuid
-			if {troop::%player's uuid%} is set:
+			if {troop::troop::%player's uuid%} is set:
 				if arg-2 is set:
-					if {troop::owner::%{troop::%player's uuid%}%} is player:
-						if {troop::admins::%{troop::%player's uuid%}%::*} contains {_p}: 						
-							if {troop::owner::%{troop::%player's uuid%}%} is not {_p}:
-								remove "%{_p}%" from {troop::admins::%{troop::%player's uuid%}%::*}
-								troopchat({troop::%player's uuid%}, "&6%{_p}% &bhas been demoted to member rank.")
+					if {troop::owner::%{troop::troop::%player's uuid%}%} is player's uuid:
+						if {troop::admins::%{troop::troop::%player's uuid%}%::*} contains {_u}: 						
+							if {troop::owner::%{troop::troop::%player's uuid%}%} is not {_u}:
+								remove {_u} from {troop::admins::%{troop::troop::%player's uuid%}%::*}
+								troopchat({troop::troop::%player's uuid%}, "&6%{_p}% &bhas been demoted to member rank.")
 							else:
 								message "{@p} &cYou can't demote urself lmfao." # easter egg lol
 						else:
@@ -217,26 +216,26 @@ command /troops [<text>] [<text>] [<text>]:
 		else if arg-1 is "kick":
 			set {_p} to (arg-2 parsed as offline player)
 			set {_u} to {_p}'s uuid
-			if {troop::%player's uuid%} is set:
+			if {troop::troop::%player's uuid%} is set:
 				if arg-2 is set:
-					if {troop::admins::%{troop::%player's uuid%}%::*} contains player: 
-						if {troop::admins::%{troop::%player's uuid%}%::*} contains {_p}:
-							if {troop::owner::%{troop::%player's uuid%}%} isn't {_p}:
-								if {troop::owner::%{troop::%player's uuid%}%} is player:
-									remove "%{_p}%" from {troop::admins::%{troop::%player's uuid%}%::*}
-									remove "%{_p}%" from {troop::memberlist::%{troop::%player's uuid%}%::*}
-									remove 1 from {troop::members::%{troop::%player's uuid%}%}
-									delete {troop::%{_u}%}
-									troopchat("%{troop::%player's uuid%}%", "&6%{_p}% &chas been kicked from the troop.")
+					if {troop::admins::%{troop::troop::%player's uuid%}%::*} contains player's uuid: 
+						if {troop::admins::%{troop::troop::%player's uuid%}%::*} contains {_u}:
+							if {troop::owner::%{troop::troop::%player's uuid%}%} isn't {_u}:
+								if {troop::owner::%{troop::troop::%player's uuid%}%} is player's uuid:
+									remove {_u} from {troop::admins::%{troop::troop::%player's uuid%}%::*}
+									remove {_u} from {troop::memberlist::%{troop::troop::%player's uuid%}%::*}
+									remove 1 from {troop::members::%{troop::troop::%player's uuid%}%}
+									delete {troop::troop::%{_u}%}
+									troopchat("%{troop::troop::%player's uuid%}%", "&6%{_p}% &chas been kicked from the troop.")
 								else:
 									message "{@p} &cOnly the owner can kick admins."
 							else:
 								message "{@p} &cYou can't kick the owner &lsmh my smh my head." # easter egg lol
-						else if {troop::memberlist::%{troop::%player's uuid%}%::*} contains {_p}:
-							troopchat("%{troop::%player's uuid%}%", "&6%{_p}% &chas been kicked from the troop.")
-							remove "%{_p}%" from {troop::memberlist::%{troop::%player's uuid%}%::*}
-							remove 1 from {troop::members::%{troop::%player's uuid%}%}
-							delete {troop::%{_u}%}
+						else if {troop::memberlist::%{troop::troop::%player's uuid%}%::*} contains {_u}:
+							troopchat("%{troop::troop::%player's uuid%}%", "&6%{_p}% &chas been kicked from the troop.")
+							remove {_u} from {troop::memberlist::%{troop::troop::%player's uuid%}%::*}
+							remove 1 from {troop::members::%{troop::troop::%player's uuid%}%}
+							delete {troop::troop::%{_u}%}
 						else:
 							message "{@p} This user is not in the troop"
 					else:
@@ -246,14 +245,14 @@ command /troops [<text>] [<text>] [<text>]:
 			else:
 				message "{@p} You're not in a troop."
 		else if arg-1 is "leave": 
-			if {troop::%player's uuid%} is set:
-				troopchat("%{troop::%player's uuid%}%", "&6%player% &chas left the troop")
+			if {troop::troop::%player's uuid%} is set:
+				troopchat("%{troop::troop::%player's uuid%}%", "&6%player% &chas left the troop")
 				send "{@p} &fYou have left the troop." to player
 				wait 3 ticks
-				remove "%player%" from {troop::memberlist::%{troop::%player's uuid%}%::*}
-				remove 1 from {troop::members::%{troop::%player's uuid%}%}
-				remove "%player%" from {troop::admins::%{troop::%player's uuid%}%::*}
-				delete {troop::%player's uuid%}
+				remove player's uuid from {troop::memberlist::%{troop::troop::%player's uuid%}%::*}
+				remove 1 from {troop::members::%{troop::troop::%player's uuid%}%}
+				remove player's uuid from {troop::admins::%{troop::troop::%player's uuid%}%::*}
+				delete {troop::troop::%player's uuid%}
 			else:
 				send "{@p} You're not in a troop."
 
@@ -265,14 +264,14 @@ command /troops [<text>] [<text>] [<text>]:
 						loop {troop::memberlist::%arg-3%::*}:
 							set {_p} to loop-value parsed as player
 							set {_u} to {_p}'s uuid
-							delete {troop::%{_u}%}
+							delete {troop::troop::%{_u}%}
 						remove arg-3 from {troop::names::*}
 						delete {troop::owner::%arg-3%}
 						delete {troop::coins::%arg-3%}
 						delete {troop::admins::%arg-3%::*}
 						delete {troop::members::%arg-3%}
-						delete {troop::level::%{troop::%arg 3%}%}
-						delete {troop::levelprogress::%{troop::%arg 3%}%}
+						delete {troop::level::%{troop::troop::%arg 3%}%}
+						delete {troop::levelprogress::%{troop::troop::%arg 3%}%}
 						delete {troop::memberlist::%arg-3%::*}
 						send "{@p} Troop &6%arg-3%&f deleted."
 						
@@ -312,34 +311,34 @@ command /troops [<text>] [<text>] [<text>]:
 			message "&7/troops &bcan be abbriviated as &6/trl &bor &6/troop"
 			message ""
 			# message "&7&l/troops &6&lhelp &r&7- &b&lLearn the basics of how to make/run a troop"
-			message "&&/troops &6info [name] &7- &bGet info about your troop or another troop"
+			message "&7/troops &6info [name] &7- &bGet info about your troop or another troop"
 			# message "&7/troops &6members [name] &7- &bGet the members currently in a troop"
-			if {troops::%player's uuid%} is set:
-				message "&6/t <message> &7- &bSend a message to your troop"
-				if {troop::owner::%{troop::%player's uuid%}%} is player:
+			if {troop::troop::%player's uuid%} is set:
+				message "&6/t <message/toggle> &7- &bSend a message to your troop" # , use ""toggle"" to tollge full troopchat"
+				if {troop::owner::%{troop::troop::%player's uuid%}%} is player's uuid:
 					message "&7/troops &6delete &7- &bDelete your troop"
 					message "&7/troops &6demote <player> &7- &bDemote a player"
 				else:
 					message "&7/troops &6leave &7- &bLeave a troop"
-				if {troop::admins::%{troop::player's uuid}%::*} contains player:
+				if {troop::admins::%{troop::troop::%player's uuid%}%::*} contains player's uuid:
 					message "&7/troops &6invite <player> &7- &bInvite a player to the troop"
 					# message "&7/troops &6invitecancel <player> &7- &bCancel an invite sent to a player"
 					message "&7/troops &6promote <player> &7- &bPromote a player"
 					message "&7/troops &6kick <player> &7- &bKick a player"
 			else:
-				message "&7/troops &6join &87- &bJoin a troop"
+				message "&7/troops &6join &7- &bJoin a troop"
 			player has permission "troops.admin"
 			message "&7/troops &6admin &7- &bUse &6/troops admin &bto see admin cmds"
 
 command /t [<string>]:
 	trigger:
-		if {troops::%player's uuid%} is set:
-			if {troop::owner::%{troop::%player's uuid%}%} is player:
-				troopchat({troops::%player's uuid%}, "&6[%player%☆☆☆] &b%arg 1%")
-			else if {troop::admins::%{troop::player's uuid}%::*} contains player:
-				troopchat({troops::%player's uuid%}, "&6[%player%☆☆] &b%arg 1%")
+		if {troop::troop::%player's uuid%} is set:
+			if {troop::owner::%{troop::troop::%player's uuid%}%} is player's uuid:
+				troopchat({troop::troop::%player's uuid%}, "&6[%player%☆☆☆] &b%arg 1%")
+			else if {troop::admins::%{troop::troop::%player's uuid%}%::*} contains player's uuid:
+				troopchat({troop::troop::%player's uuid%}, "&6[%player%☆☆] &b%arg 1%")
 			else:
-				troopchat({troops::%player's uuid%}, "&6[%player%☆] &b%arg 1%")
+				troopchat({troop::troop::%player's uuid%}, "&6[%player%☆] &b%arg 1%")
 		else:
 			message "{@p} &cYou need to be in a troop to execute this command!"
 
@@ -357,13 +356,13 @@ function troopcreation(p: player, i: integer):
 			send "{@p} &cYou need to be at least lv. 50 to make a troop." to {_p}
 			troopcancel({_p})
 			stop
-		else if {_p} dosen't have 576 emeralds:	
+		else if {_p}'s inventory contains 576 emeralds:	
 			send "{@p} &cYou need to be at least 576 emeralds in your inventory to make a troop." to {_p}
 			troopcancel({_p})
 			stop
-		else
+		else:
 			send "&7[-576 emeralds]" to {_p}
-			remove 576 emeralds from player
+			remove 576 emeralds from {_p}
 			send "" to {_p}
 			send "      &6&lTROOP CREATION" to {_p}
 			send "" to {_p}
@@ -371,7 +370,6 @@ function troopcreation(p: player, i: integer):
 			send "" to {_p}
 			set {troops::troopmastertalk::%{_u}%} to 2
 
-function troopchat(p: player, m: string):
-	set {_u} to {_p}'s uuid
-	loop {troop::memberlist::%{troop::%{_u}%}%::*}:
+function troopchat(t: text, m: string):
+	loop {troop::memberlist::%{_t}%::*}:
 		send "&6[&bTC&6] &7» &b%{_m}%" to loop-value parsed as player
