@@ -24,7 +24,6 @@ every 5 minutes: #RE-DO!!!!!!!!!
 		if {troop::troop::%loop-player's uuid%} is set:
 			add 1 to {troop::coins::%{troop::troop::%loop-player's uuid%}%}
 			send "{@p} +1 troop coins." to loop-player #redo
-
 on npc click:
 	if name of npc is "&6Troops Master":
 		if {troop::troop::%player's uuid%} is set:
