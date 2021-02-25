@@ -93,6 +93,9 @@ every 1 minute:
 command /troops [<text>] [<text>] [<text>]:
 	aliases: tr, troop
 	trigger:
+
+# Basic troop info and stuff
+
 		if arg-1 is "info":
 			if arg-2 is not set:
 				if {troop::troop::%player's uuid%} is set:
@@ -142,6 +145,7 @@ command /troops [<text>] [<text>] [<text>]:
 			else:
 				send "{@p} &cYou are not in a troop."
 
+# Inviting/joining
 
 		else if arg-1 is "invite":
 			if {troop::troop::%player's uuid%} is set:
@@ -150,16 +154,39 @@ command /troops [<text>] [<text>] [<text>]:
 					set {_u} to {_p}'s uuid
 					if arg-2 is set:
 						if {troop::memberlist::%{troop::troop::%player's uuid%}%::*} doesn't contain {_u}:
-							add {troop::troop::%player's uuid%} to {troops::request::%{_u}%::*}
-							message "{@p} Invited &6%arg-2%&f to the troop."
-							send "{@p} You have been invited to join &l%{troop::troop::%player's uuid%}%&r&6. Use &b/tr join %{troop::troop::%player's uuid%}% &6to join" to {_p}
-							troopchat({troop::troop::%player's uuid%}, "&6%{_p}% &bwas invited to join the troop.")
+							if {troops::request::%{_u}%::*} dosen't contain {troop::troop::%player's uuid%}:
+								add {troop::troop::%player's uuid%} to {troops::request::%{_u}%::*}
+								set {troop::requests::%{troop::troop::%player's uuid%}%::%{_u}%} to now
+								message "{@p} Invited &6%arg-2%&f to the troop."
+								send "{@p} You have been invited to join &l%{troop::troop::%player's uuid%}%&r&6. Use &b/tr join %{troop::troop::%player's uuid%}% &6to join" to {_p}
+								troopchat({troop::troop::%player's uuid%}, "&6%{_p}% &bwas invited to join the troop.")
+							else: 
+								message "{@p} This player is already in your troop."
 						else:
 							message "{@p} This player is already in your troop."
 					else:
 						message "{@p} &cPlease add a player"
 				else:
 					message "{@p} &cOnly admins can invite players to a troop."
+			else:
+				send "{@p} &cYou are not in a troop."
+		else if arg 1 is "invitecancel":
+			if {troop::troop::%player's uuid%} is set:
+				if {troop::admins::%{troop::troop::%player's uuid%}%::*} contains player's uuid:
+					set {_p} to (arg-2 parsed as player)
+					set {_u} to {_p}'s uuid
+					if arg-2 is set:
+						if {troop::memberlist::%{troop::troop::%player's uuid%}%::*} doesn't contain {_u}:
+							remove {troop::troop::%player's uuid%} from {troops::request::%{_u}%::*}
+							message "{@p} Invited &6%arg-2%&f to the troop."
+							send "{@p} &cYour invatation to joining &l%{troop::troop::%player's uuid%}%&r&c was terminated." to {_p}
+							troopchat({troop::troop::%player's uuid%}, "&6%{_p}% &bhas been uninvited to join the troop.")
+						else:
+							message "{@p} This player is already in your troop."
+					else:
+						message "{@p} &cPlease add a player"
+				else:
+					message "{@p} &cOnly admins can cancel invites."
 			else:
 				send "{@p} &cYou are not in a troop."
 		else if arg-1 is "join":
@@ -177,6 +204,7 @@ command /troops [<text>] [<text>] [<text>]:
 			else:
 				message "{@p} &cYou are already in a troop."
 
+# Management
 
 		else if arg-1 is "promote":
 			if {troop::troop::%player's uuid%} is set:
@@ -256,6 +284,7 @@ command /troops [<text>] [<text>] [<text>]:
 			else:
 				send "{@p} You're not in a troop."
 
+# Admin
 
 		else if arg-1 is "admin":
 			if player has permission "troops.admin":
@@ -329,6 +358,8 @@ command /troops [<text>] [<text>] [<text>]:
 				message "&7/troops &6join &7- &bJoin a troop"
 			player has permission "troops.admin"
 			message "&7/troops &6admin &7- &bUse &6/troops admin &bto see admin cmds"
+
+# Troopchat
 
 command /t [<string>]:
 	trigger:
