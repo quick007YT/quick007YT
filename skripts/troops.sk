@@ -450,3 +450,54 @@ function troopcreation(p: player, i: integer):
 function troopchat(t: text, m: string):
 	loop {troop::memberlist::%{_t}%::*}:
 		send "&6[&bTC&6] &7» &b%{_m}%" to loop-value parsed as player	
+
+on tab complete of "/t":
+	add "toggle" to tab completions
+
+on tab complete of "/troops" or "/troop" or "/tr":
+	clear tab completions
+
+# Arg 1
+
+	set tab completions for position 1 to "info", "list", "members", and "help"
+	if player has permission "troops.admin":
+		add "admin" to tab completions for position 1
+	if {troop::troop::%player's uuid%} is set:
+		if {troop::owner::%{troop::troop::%player's uuid%}%} is player's uuid:
+			add "demote" to tab completions for position 1
+		if {troop::admins::%{troop::troop::%player's uuid%}%::*} contains player's uuid:
+			add "invite", "invitecancel", "promote", and "kick"  to tab completions for position 1
+	else:
+		add "join" to tab completions for position 1
+
+# Arg 2
+
+	if tab arg 1 = "join":
+		loop {troops::request::%player%::*}:
+			add loop-value to tab completions for position 2
+	{troop::troop::%player's uuid%} is set
+	if tab arg 1 = "info" or "members":
+		loop {troop::names::*}:
+			set tab completions for position 2 to (loop value parsed as offline player) # may need to remove if it causes client lag
+	if tab arg 1 = "admin":
+		set tab completions for position 2 to "delete", "add", "remove", and "list"
+	if tab arg 1 = "demote":
+		loop {troop::admins::%{troop::troop::%player's uuid%}%::*}:
+			set tab completions for position 2 to (loop value parsed as offline player) 
+	if tab arg 1 = "promote":
+		add {troop::admins::%{troop::troop::%player's uuid%}%::*} to {_admins::*} parsed as offline player
+		add {troop::memberlist::%{troop::troop::%player's uuid%}%::*} to {_members::*} parsed as offline player
+		remove {_admins::*} from {_members::*}
+		loop {_members::*}:
+			set tab completions for position 2 to loop value
+	if tab arg 1 = "invite":
+		loop all players:
+			set tab completions for position 2 to loop value
+	if tab arg 1 = "invitecancel":
+		loop all offline players:
+			if {troops::request::%loop-value%::*} contains {troop::troop::%player's uuid%}:
+				add loop-value to tab completions for position 2
+	if tab arg 1 = "kick":
+		loop {troop::memberlist::%{troop::troop::%player's uuid%}%::*}:
+			add loop-value to tab completions for position 2
+	
