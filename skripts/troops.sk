@@ -12,7 +12,7 @@ options:
 # add /troops help
 # add tab complete
 # make the amount of members = ur level + 1
-# make all the things transelate the messages to be uppercase when refrancing a troop
+# make all the things transelate the messages to be uppercase when refrancing a troop - needs conformation if done
 # add guild bank
 
 on script load:
