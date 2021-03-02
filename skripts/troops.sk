@@ -12,7 +12,8 @@ options:
 # add /troops help
 # add tab complete
 # make the amount of members = ur level + 1
-#
+# make all the things transelate the messages to be uppercase when refrancing a troop
+# add guild bank
 
 on script load:
 	if {troop::names::*} is not set:
@@ -24,7 +25,8 @@ every 5 minutes: #RE-DO!!!!!!!!!
 		if {troop::troop::%loop-player's uuid%} is set:
 			add 1 to {troop::coins::%{troop::troop::%loop-player's uuid%}%}
 			send "{@p} +1 troop coins." to loop-player #redo
-on npc click:
+
+on citizen right click:
 	if name of npc is "&6Troops Master":
 		if {troop::troop::%player's uuid%} is set:
 			message "&4Your already in a troop! &6&lTIP: &7Use /troops to manage your troop, or /troops leave to leave one."
@@ -41,7 +43,7 @@ on npc click:
 on chat:
 	if {troops::troopmastertalk::%player's uuid%} is set:
 		cancel event
-		set {_msg} to the chat message
+		set {_msg} to uppercase chat message
 		if {troops::troopmastertalk::%player's uuid%} is 1:
 			if {_msg} is "yes":
 				troopcreation(player, 1)
@@ -103,9 +105,9 @@ every 1 minute:
 command /troops [<text>] [<text>] [<text>]:
 	aliases: tr, troop
 	trigger:
-
+		
 # Basic troop info and stuff
-
+		set {_arg 2} to uppercase arg 2
 		if arg-1 is "info":
 			if arg-2 is not set:
 				if {troop::troop::%player's uuid%} is set:
@@ -123,26 +125,28 @@ command /troops [<text>] [<text>] [<text>]:
 				if {troop::names::*} contains arg 2:
 					message "{@p} &l%arg 2% &r&8- &bInfo"
 					message ""
-					message "&6Level: &b%{troop::level::%arg 2%}% &7%{troop::levelprogress::%arg 2%}%%%"
-					message "&6Coins: &a⛁%{troop::coins::%arg 2%}%"
+					message "&6Level: &b%{troop::level::%{_arg 2}%}% &7%{troop::levelprogress::%{_arg 2}%}%%%"
+					message "&6Coins: &a⛁%{troop::coins::%{_arg 2}%}%"
 					message ""
-					set {_owner} to {troop::owner::%arg 2%} parsed as offline player
+					set {_owner} to {troop::owner::%{_arg 2}%} parsed as offline player
 					message "&6Owner: &e%{_owner}%"
-					send formatted "&6Members: &7[%{troop::members::%{troop::troop::%player's uuid%}%}%] &b<cmd:/troops members %arg 2%>[Click here]<reset>" to player
+					send formatted "&6Members: &7[%{troop::members::%{_arg 2}%}%] &b<cmd:/troops members %{_arg 2}%>[Click here]<reset>" to player
 				else:
 					message "{@p} &cThis troop dosen't exist!"
-		else if arg 2 is "list":
+		else if arg 1 is "list":
 			message "{@p} &lGuilds List:"
 			message "&7%{troop::names::*}%"
-		else if arg 2 is "members":
-			if {troop::names::*} contains arg 3:
-				set {_owner} to {troop::owner::%arg 3%} parsed as offline player
-				add ({troop::admins::%arg 3%::*} parsed as offline player) to {_admins::*} 
-				add ({troop::memberlist::%arg 3%::*} parsed as offline player) to {_members::*} 
-				remove {_admins::*} from {_members::*}
+		else if arg 1 is "members":
+			if {troop::names::*} contains {_arg 2}:
+				set {_owner} to {troop::owner::%{_arg 2}%} parsed as offline player
+				loop {troop::admins::%{_arg 2}%::*}:
+					add (loop-value parsed as offline player) to {_admins::*} 
+				loop {troop::memberlist::%{_arg 2}%::*}:
+					add (loop-value parsed as offline player) to {_members::*}
+				remove all {_admins::*} from {_members::*}
 				remove {_owner} from {_admins::*}
 				message ""
-				message "{@p} %arg 3% &8 &bMember List"
+				message "{@p} &l%{_arg 2}% &r&8- &bMember List"
 				message ""
 				message "&6Owner: &e%{_owner}%"
 				message ""
@@ -201,12 +205,12 @@ command /troops [<text>] [<text>] [<text>]:
 				send "{@p} &cYou are not in a troop."
 		else if arg-1 is "join":
 			if {troop::troop::%player's uuid%} is not set:
-				if {troops::request::%player's uuid%::*} contains arg 2:
-					{troop::memberlist::%arg 2%::*} exists
-					set {troop::troop::%player's uuid%} to arg 2
+				if {troops::request::%player's uuid%::*} contains uppercase arg 2:
+					{troop::memberlist::%{_arg 2}%::*} exists
+					set {troop::troop::%player's uuid%} to uppercase arg 2
 					add 1 to {troop::members::%{troop::troop::%player's uuid%}%}
-					add player's uuid to {troop::memberlist::%arg 2%::*}
-					message "{@p} You have joined &6%arg 2%&f."
+					add player's uuid to {troop::memberlist::%{_arg 2}%::*}
+					message "{@p} You have joined &6%{_arg 2}%&f."
 					troopchat({troop::troop::%player's uuid%}, "&6%player% &bhas joined the troop.")
 					wait 3 ticks
 					delete {troops::request::%player's uuid%::*}
