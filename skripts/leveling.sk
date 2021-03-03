@@ -30,7 +30,7 @@ function tlevelup(t: text): # level up a troop
     troopchat({_t}, " ")
     troopchat({_t}, "            &6&lLEVEL UP")
     troopchat({_t}, " ")
-    troopchat({_t}, " You are now level &6%{troop::level::%{_t}%}%")
+    troopchat({_t}, " &bYou are now level &6%{troop::level::%{_t}%}%")
     troopchat({_t}, " &7[+1 player slots]") # add more level perks here once we add them
     troopchat({_t}, " ")
 
