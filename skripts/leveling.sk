@@ -9,18 +9,18 @@ function taddxp(p: player, xp: integer): # input player giveing xp and how much
     if {_lup} <= {troop::levelprogress::%{troop::troop::%{_u}%}%}:
         tlevelup({troop::troop::%{_u}%})
     chance of 5%:
-        send "&bRemember, as you gain xp, xp automagically goes into your guild at no cost to you!"
+        send "&bRemember, as you gain xp, xp automagically goes into your guild at no cost to you!" to {_p}
 
-function tgetlv(t: text):: integer: # input a troop name, same for the next few. Gets the lvel of the troop
+function tgetlv(t: text) :: integer: # input a troop name, same for the next few. Gets the lvel of the troop
     return {troop::level::%{_t}%}
 
-function tgetxpneeded(t: text):: integer: # get the amount of xp needed to get from the current level to the next one
-    set {_level} to tgetlv({_t}})
+function tgetxpneeded(t: text) :: integer: # get the amount of xp needed to get from the current level to the next one
+    set {_level} to tgetlv({_t})
     set {_math} to 210 * 1.2 ^ {_level}
     set {_math} to round ({_math})
     return {_math}
 
-function tgetxphave(t: text):: integer: # get the amount of xp a troop currently has
+function tgetxphave(t: text) :: integer: # get the amount of xp a troop currently has
     return {troop::levelprogress::%{_t}%}
 
 
