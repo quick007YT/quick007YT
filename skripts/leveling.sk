@@ -1,0 +1,37 @@
+# add /forcelevel in the main skript
+# need to add personal xp vars and % level progress var
+# need to do leveling perks, and member count thing in relation to level
+
+function taddxp(p: player, xp: integer): # input player giveing xp and how much
+    set {_u} to {_p}'s uuid
+    add {_xp} to {troop::levelprogress::%{troop::troop::%{_u}%}%}
+    set {_lup} to tgetxpneeded({troop::troop::%{_u}%})
+    if {_lup} <= {troop::levelprogress::%{troop::troop::%{_u}%}%}:
+        tlevelup({troop::troop::%{_u}%})
+    chance of 5%:
+        send "&bRemember, as you gain xp, xp automagically goes into your guild at no cost to you!"
+
+function tgetlv(t: text):: integer: # input a troop name, same for the next few. Gets the lvel of the troop
+    return {troop::level::%{_t}%}
+
+function tgetxpneeded(t: text):: integer: # get the amount of xp needed to get from the current level to the next one
+    set {_level} to tgetlv({_t}})
+    set {_math} to 210 * 1.2 ^ {_level}
+    set {_math} to round ({_math})
+    return {_math}
+
+function tgetxphave(t: text):: integer: # get the amount of xp a troop currently has
+    return {troop::levelprogress::%{_t}%}
+
+
+function tlevelup(t: text): # level up a troop
+    set {troop::levelprogress::%{_t}%} to 0
+    add 1 to {troop::level::%{_t}%}
+    troopchat({_t}, " ")
+    troopchat({_t}, "            &6&lLEVEL UP")
+    troopchat({_t}, " ")
+    troopchat({_t}, " You are now level &6%{troop::level::%{_t}%}%")
+    troopchat({_t}, " &7[+1 player slots]") # add more level perks here once we add them
+    troopchat({_t}, " ")
+
+
