@@ -1,19 +1,19 @@
 on damage:
     if victim's name is uncolored "Daughtless Dominator":
-        set {_dmg} to attacker's final damage
-        add ({_dmg} parsed as integer) to {DDboss::damage::%player's uuid%}
-        set {DDboss::timehit::%player%} to now
-        if {DDboss::gamedamage::%player%} isn't set:
-            set {DDboss::gamedamage::%player%} to ({_dmg} parsed as integer)
+        set {_dmg} to damage
+        add ({_dmg} parsed as integer) to {DDboss::damage::%attacker's uuid%}
+        set {DDboss::timehit::%attacker%} to now
+        if {DDboss::gamedamage::%attacker%} isn't set:
+            set {DDboss::gamedamage::%attacker%} to ({_dmg} parsed as integer)
         else:
-            add ({_dmg} parsed as integer) to {DDboss::gamedamage::%player%}
+            add ({_dmg} parsed as integer) to {DDboss::gamedamage::%attacker%}
 
 
 on death:
     if victim's name is uncolored "Daughtless Dominator":
         loop all players:
-            loop-player's dimension is "end"
-            set {_timer} to time between {DDboss::timehit::%loop-player%} and now
+            loop-player's world is "end"
+            set {_timer} to difference between {DDboss::timehit::%loop-player%} and now
             {_timer} < 27 seconds # player needs to have it the boss within the last 27 seconds
             {DDboss::gamedamage::%loop-player%} > 100 #player needs to do 20% of the dmg at least to get a "win"
             add 1 to {DDboss::wins::%player's uuid%}
@@ -34,7 +34,7 @@ on death:
 
 
 
-on leave:
+on disconnect:
     delete {DDboss::timehit::%player%}
     delete {DDboss::gamedamage::%player%}
 
