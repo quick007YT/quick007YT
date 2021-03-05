@@ -1,8 +1,114 @@
 # add gui's with different states:
-# 1: bossfight happening rn (max 10 mins)
-# 2: cooldown until next boossfight (30 mins?)
+# 1: bossfight happening rn (max 5 mins)
+# 2: cooldown until next boossfight (15 mins)
 # 3: queue for bossfight (1 min)
 
 # add new rewards system
 # top wins/damage leaderboards?
 
+options:
+    world-name: end # CHANGE THIS TO THE WORLD THE RAID IS IN!!!!!!!!!!
+
+
+command /createscoreboards:
+    trigger:
+        if player is "quick_007" or "iOmega__":
+            create hologram at location(34.5, 79.5, 14.5in world("{@world-name}")) with id "DDbossentrance1"
+            set {_h} to hologram with id "DDbossentrance1"
+            add line "&5&lDauntless Dominator &r&6&lBOSSFIGHT" to {_h}
+            add line "&aClick to join" to {_h}
+            add line "&7-" to {_h}
+            add line "&7type &7- &ftime" to {_h}
+            make line 2 of {_h} clickable
+
+            create hologram at location(34.5, 79.5, 14.5in world("{@world-name}")) with id "DDbossentrance2"
+            set {_h} to hologram with id "DDbossentrance2"
+            add line "&5&lDauntless Dominator &r&6&lBOSSFIGHT" to {_h}
+            add line "&aClick to join" to {_h}
+            add line "&7-" to {_h}
+            add line "&7type &7- &ftime" to {_h}
+            make line 2 of {_h} clickable
+            message "poggers"
+        else:
+            message "lol no"
+
+on hologram touch:
+    if {bossDD::queue::*} contains player:
+
+every 10 seconds:
+    subtract 10 from {bossDD::waittime}
+    if {bossDD::waittime} <=0:
+        bossDDtypeconverter()
+    set {_t} timeconvert({bossDD::waittime})
+    # add hologram updating code here
+
+        
+on death:
+    if victim's name is uncolored "Daughtless Dominator":
+        set {bossDD::dead} to true
+        # add death code here
+    else if victim is player:    
+        {bossDD::queue::*} contains victim
+        send "&cYou failed the bossfight!" to victim
+        remove victim from {bossDD::queue::*}
+
+on leave:
+    {bossDD::queue::*} contains player
+    remove player from {bossDD::queue::*}
+
+on skript load:
+    set {bossDD::waittype} to "queue"
+    set {bossDD::waittime} to "60"
+
+function timeconvert(i: integer) :: integer: # converts a raw number into minutes/seconds
+    if {_i} <= 60:
+        return "%{_i}% secs"
+    else:
+        set {_i} to {_i}/60
+        set {_i} to round({_i})
+        return "%{_i}% mins"
+
+function bossDDtypeconverter():
+    if {bossDD::waittype} is "queue":
+        set {bossDD::waittype} to "play"
+        set {bossDD::waittime} to "300"
+        if {bossDD::queue::*} is set:
+            loop {bossDD::queue::*}:
+                loop player is online
+                loop player is in world "{@world-name}" 
+                teleport loop-player to location(18, 78, 17 in world("{@world-name}")) 
+                push loop-player west at speed 2
+                push loop-player south at speed 1
+                # insert the sound you use rn here
+                send subtitle "&8Bringer of &0dDarkness" for 1 second
+                wait 1 second
+                send subtitle "&8Bringer of &0&kdDarkness" for 0.3 seconds
+                wait 0.3 seconds
+                send subtitle "&8Bringer of &0dDarkness" for 0.5 seconds
+                message "&7Right click the &bglass panes &7around the map for a better prize!"
+        else:
+            nytruxbroadcast("No one showed up to fight the dauntless beast!")
+    else if {bossDD::waittype} is "play":
+        set {bossDD::waittype} to "wait"
+        set {bossDD::waittime} to "900"
+        if {bossDD::dead} is set:
+            delete {bossDD::dead}
+            stop
+        else: 
+            nytruxbroadcast("%{bossDD::queue::*}% &cfailed to kill the dauntless beast. &aTry again in 15 minutes!")
+            
+
+            
+    else if {bossDD::waittype} is "wait":
+        set {bossDD::waittype} to "queue"
+        set {bossDD::waittime} to "60"
+        nytruxbroadcast("The queue has started for the dauntless monster. Talk to david and join the queue in the Darkest Depths!")
+
+
+function nytruxbroadcast(m: string):
+    broadcast ""
+    broadcast "&8[&9&lNYTRUX&r&8] &a%{_m}%"
+    broadcast ""
+
+function DDsetholovisability():
+    loop {bossDD::queue::*}:
