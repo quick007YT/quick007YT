@@ -14,7 +14,7 @@ Feel free to reach out to me on [discord](https://dsc.bio/LukasK), I'm most acti
 
 ### Some cool stats
 
-![github stats](https://github-readme-stats.vercel.app/api?username=LukasmanMHdude&show_icons=true&hide_title=true&theme=nord)
+![github stats](https://github-readme-stats.vercel.app/api?username=quick007YT&show_icons=true&hide_title=true&theme=nord)
 
 <!--
 **LukasmanMHdude/LukasmanMHdude** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
