@@ -14,7 +14,7 @@ Feel free to reach out to me on [discord](https://dsc.bio/LukasK), I'm most acti
 
 ### Some cool stats
 
-![Lukas's GitHub stats](https://github-readme-stats.vercel.app/api?username=quick007YT&theme=gotham&show_icons=true)
+![Lukas's GitHub stats](https://github-readme-stats.vercel.app/api?username=quick007&theme=gotham&show_icons=true)
 
 
 <!--
