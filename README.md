@@ -15,8 +15,8 @@ Feel free to reach out to me on [discord](https://dsc.bio/quick007), I'm most ac
 ### Some cool stats
 
 <div style="display: flex;">
-<img src="https://readme-stats-gules.vercel.app/api?username=quick007&bg_color=30,45CAFF,FF1B6B&show_icons=true&count_private=true&title_color=fff&text_color=fff&icon_color=3d34eb&hide_border=true&border_radius=10" alt="Lukas' Github Stats" style="height: 14rem; padding-right: 5rem;" />
- <img src="https://readme-stats-gules.vercel.app/api/top-langs/?username=quick007&layout=donut&count_private=true&hide_border=true&bg_color=000&title_color=fff&text_color=fff&icon_color=3d34eb&border_radius=10" alt="Lukas' Github Languages" style="height: 14rem;" />
+<img src="https://readme-stats-gules.vercel.app/api?username=quick007&bg_color=30,45CAFF,FF1B6B&show_icons=true&count_private=true&title_color=fff&text_color=fff&icon_color=3d34eb&hide_border=true&border_radius=10" alt="Lukas' Github Stats" style="height: 13rem" />
+ <img src="https://readme-stats-gules.vercel.app/api/top-langs/?username=quick007&layout=donut&count_private=true&hide_border=true&bg_color=000&title_color=fff&text_color=fff&icon_color=3d34eb&border_radius=10" alt="Lukas' Github Languages" style="height: 13rem;" />
 </div>
 
 
