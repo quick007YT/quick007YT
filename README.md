@@ -1,14 +1,14 @@
 ### Hi there 👋
 
-I'm Lukas, and I do a lot of random stuff with making Minecraft servers, leading WynnCraft guilds, and I'm to learning how to code as well. You'll probably see me on [youtube](https://www.youtube.com/channel/UCz4sh4dNpNHtqD80TvOZL-A), [twitter](https://twitter.com/quick007yt), and [discord](https://dsc.bio/LukasK).
+I'm Lukas, and I do a lot of random stuff like coding websites, making discord bots, and crafting Minecraft experiences. You'll probably see me on [youtube](https://www.youtube.com/channel/UCz4sh4dNpNHtqD80TvOZL-A), [twitter](https://twitter.com/quick007yt), and [discord](https://dsc.bio/LukasK).
 
-If you wanna find my other socials, I have a preatty uniqe name, `quick007`. Look that up on google and you'll find me :wink:.
+If you wanna find my other socials, I have a pretty unique name, `quick007`. Look that up on Google and you'll find me :wink:.
 
 ---
 
 ### Need help?
 
-Feel free to reach out to me on [discord](https://dsc.bio/quick007), I'm most active there!
+Feel free to contact me on [discord](https://dsc.bio/quick007), I respond the fastest there!
 
 ---
 
